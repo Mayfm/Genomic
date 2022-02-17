@@ -1,0 +1,320 @@
+---
+title: "Tarea 2"
+author: "Mayela Fosado"
+date: "16/2/2022"
+output: 
+  rmdformats::downcute
+  
+---
+<style type="text/css">
+  body{
+    font-family: Century Gothic;
+  font-size: 11pt;
+  
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# EJERCICIO 1
+
+
+Considera las siguientes cantidades discute y justifica qué tipo de distribución de probabilidad pueden tener las siguientes variables:
+
+##### **a. El número (talla) de calzado de adultos varones en México.**
+
+ <p style="color:#219F94">**Distribución unimodal:**</p>
+
+  Porque casi todos los adultos varones se distribuyen alrededor del promedio de número de calzado, y son pocos los que tienen un número de calzado fuera del promedio; mayor o menor.
+ 
+ 
+##### **b. La distribución de habitantes en asentamientos humanos de México.**
+ <p style="color:#219F94">**Distribución unimodal:**</p>
+
+Porque la mayoría de las personas, viven en asentamientos y son muy pocas las personas que viven aisladas, por lo que se distribuye el promedio, entre ni muchas casas, ni pocas.
+  
+  
+##### **c. La velocidad promedio de los automóviles en Bernardo Quintana a las 9 de la mañana en un día laborable.**
+
+ <p style="color:#219F94">**Distribución unimodal:**</p>
+ 
+ Porque al ser una hora transcurrida en Bernardo Quintana, la mayoría de las personas lleva una misma velocidad, para seguir constante y mantener un flujo automovilístico. Así que, todos están alrededor del promedio, el cual puede ser alrededor de 60 km/h (sin tanto tráfico).
+
+##### **d. La velocidad promedio de los automóviles en Bernardo Quintana a las 3 de la mañana.**
+
+ <p style="color:#219F94">**Distribución free-scale:**</p>
+ 
+ Porque al no haber tantos automóviles manejan más rápido que el límite establecido, sobre todo, ya que es una hora en la que muchas personas salen del antro/bar y manejan en condiciones no tan aptas. También puede haber algunos pocos que manejen más lento, para evitar accidentes.
+ 
+ 
+
+# EJERCICIO 2
+
+Supongamos que tenemos dos nodos (A,B) en una red. El nodo A y B tiene el mismo degree, pero el A tiene un coeficiente de clusterización de 1 y el nodo B un coeficiente bajo. Dibuja está situación y explica cuál sería una mejor diana si quieres eliminarlos y afectar a la red.
+
+
+![Red](https://lh3.googleusercontent.com/pw/AM-JKLU5gUEG1n6Emwl487DSMEZerLOM_1YGP1EJW5gv8Q2COULIxhnxP4EXt0Yhkm60w3VUCKc9-I1xjNiqXlbLX3q_K-KWJesepKm1hR459mMOXdvMMlr5MU8i89Vk-n6-qgguuHnvOS5wkZkS2mv1ZYPKag=w1033-h629-no?authuser=0)
+
+El mejor para eliminar con el objetivo de afectar la red sería el nodo B, porque si este se elimina se pierde la conectividad con todo el lado de A (nodos rosas). En el otro lado el nodo H también pierde toda su conectividad, y solo quedan conectados entre ellos F y G, debido a que su nivel de clusterización es más bajo, a diferencia de A, si este se elimina, permanece un nodo más conectado que quitando a B.
+
+
+# EJERCICIO 3
+
+Elabora un programa en R que usando funciones calcule, a partir de una matriz de adyacencia (Sólo utiliza R base para resolver este problema)
+
+
+    Crear una matriz:
+```{r}
+
+ # Crear una matriz
+mat <- matrix(rep(c(0, 1), times = 6), ncol = 3, nrow = 3)
+mat
+
+# Agregar nombres para identificar mas facil en el degree
+colnames(mat)<- LETTERS [1:3] # Columnas
+
+rownames(mat)<- LETTERS [1:3] # Renglones
+mat
+
+``` 
+
+**a. Si la red es dirigida o no.**
+
+```{r}
+
+# Opcion 1, analizando cada elemento - Matriz chiquita
+
+Directed <- function (Directed) {
+  if (mat[2,1] == mat [1,2] & mat[3,1] == mat[1,3] & mat[2,3] == mat[3,2]) {  # Verifica si tiene simetria, checando cada elemento en la matriz, a excepcion de 1 y 1 y así sucesivamente, porque ese es 0. (Con una matriz chiquita)
+    print ("La matriz es simétrica, por lo tanto No Dirigida")
+  } else {
+    print ("La matriz no es simétrica, por lo tanto Dirigida")
+  }
+}
+Directed()
+
+# Opcion 2, funcion isSymmetric.matrix - Cualquier matriz
+ Directed <- function (Directed) {
+  if (isSymmetric.matrix (mat) == T) {
+  print ("La matriz es simétrica, por lo tanto No Dirigida")
+    } else {
+  print ("La matriz no es simétrica, por lo tanto Dirigida")
+ }
+}
+
+Directed()
+
+
+```
+
+**b. Si la red es pesada o no.**
+
+```{r}
+
+Pesada <- function (Pesada) {
+  if (any(mat > 1) == T) {  # Verifica si existe un valor mayor a 1 en la matriz
+    print ("La matriz es pesada")
+  } else {
+    print ("La matriz no es pesada")
+  }
+}
+Pesada()
+
+```
+
+**c. El degree de los nodos.**
+
+```{r}
+
+Degree <- function (Degree) {
+  
+  mat <- ifelse(mat > 1, 1, mat) # en caso de que sea una red pesada, cambia a 1
+ 
+  
+  deg <- rowSums (mat[1:3,]) # suma los valores en los renglones, para dar el valor del degree de cada uno
+  
+
+  }
+
+Degree()
+
+
+```
+
+**d. El histograma del degree.**
+
+```{r, echo=FALSE}
+deg <- rowSums (mat[1:3,]) # suma los valores en los renglones, para dar el valor del degree de cada uno
+  deg
+ # Lo puse, porque me decia que no existia deg :c 
+  
+par(bg= "black") #cambiar el fondo
+
+# Histograma degree
+
+hist(deg, col = "#79B4B7", family = "mono",
+     col.main = "#F6E6E4", # color del titulo
+     col.lab = "#F3F1F5", # color de las etiquetas
+     fg = "#F1F7E7", col.axis = "#F1F7E7" ) # color de los ejes, y cuadro de la grafica
+
+
+```
+
+
+# EJERCICIO 4
+
+A partir de la red de interacción de proteínas alojada en la librería igraphdata, que puedes llamar mediante data(yeast) elabora un programa en R (acá sí puedes usar librerías especializadas de R) que:
+  
+  
+ <p style="color:#B762C1">**Librerías**</p>
+    
+```{r}
+library(igraph)
+library(igraphdata)
+```
+
+ <p style="color:#B762C1">**Base de datos**</p>
+
+```{r}
+data("yeast")
+```
+
+**a. Calcule la distribución de conectividades y grafique esa distribución. Discute tu resultado.**
+
+```{r, echo=FALSE}
+par(bg = "black") #cambiar el fondo
+
+# Distribucion de conectividades
+plot(degree.distribution(yeast), col = "#79B4B7", family = "mono", # degree.distribution, calcula la distribucion del degree
+     col.main = "#F6E6E4", # color del titulo
+     col.lab = "#F3F1F5", # color de las etiquetas
+     fg = "#F1F7E7", col.axis = "#F1F7E7", main = "Distribución conectividades" ) # color de los ejes, y cuadro de la grafica
+
+
+```
+
+Se obtuvo una gráfica con una distribución de cola larga. Hay muchos nodos con pocas conexiones y muy pocos con muchas.
+
+**b. Grafique el boxplot de la distribución de conectividades y discute tu resultado.**
+
+```{r, echo=FALSE}
+par(bg = "#F3F1F5") #cambiar el fondo
+
+# Distribucion de conectividades
+boxplot(degree.distribution(yeast), col = "#79B4B7", font = "mono",
+     col.main = "#A3E4DB", # color del titulo
+     fg = "#A3E4DB", col.axis = "#A3E4DB", main = "Distribución conectividades") # color de los ejes, y cuadro de la grafica
+
+```
+
+El bloxplot se obtuvo así, ya que la distribución de sus conectividades es de cola larga. Hay muchos nodos con pocas conexiones y muy pocos con muchas, por eso se ve de esta manera el boxplot.
+
+
+**c. Encuentre la proporción de nodos que tienen 15 o más conectividades.**
+
+```{r}
+
+# Obtener solo los nodos con 15 o mas conectividades
+m_15 <- which(degree(yeast) >= 15) # solo los nodos con 15 o mas conectividades
+
+# Obtener la longitud total de los datos (degree)
+leng_yeast <- length(degree(yeast))
+
+# Obtener la longitud solo de los que tienen 15 o mas conectividades
+leng_15 <- length(m_15)
+
+# Obtener la proporcion de los nodos con 15 o mas conectividades
+(leng_15/leng_yeast)*100
+
+```
+
+**d. Calcule el degree máximo de la red.**
+
+```{r}
+# Calcular el degree maximo
+
+max(degree(yeast))
+
+```
+
+**e. Calcule el diámetro**
+
+```{r}
+diameter(yeast) #funcion diameter, cacula el diametro
+```
+
+**f. La trayectoria más larga.**
+
+```{r}
+
+trayectoria <- shortest.paths(yeast) 
+tabla_trayectoria <- table(trayectoria) # te da en formato de tabla los valores de la trayectoria
+max(tabla_trayectoria) # la trayectoria mas larga
+
+```
+
+**g. Elimine los 10 nodos más conectados de la red y determine el diámetro cada vez que lo haga.**
+
+```{r}
+
+# Obtener los 10 nodos mas conectados
+m_10 <- sort(degree(yeast), decreasing = T)[1:10]
+
+# Para obtener el diametro, en el ciclo for, creamos un vector vacio, que sera el diametro
+diametro <- c()
+
+# Renombrar la base de datos, para no afectar la original
+ye <- yeast
+  
+# Ciclo for
+for(i in 1:10){ 
+  
+  diametro[i] <- diameter(ye) # crea objetos de los diametros, conforme se van quitando los nodos
+  
+  ye <- delete_vertices (ye, sample (m_10 [i])) #remover los nodos de "ye" los datos renombrados
+
+}
+
+diametro # vector con los diametros obtenidos
+
+```
+
+**h. Determine los diez nodos más importantes por al menos tres medidas de centralidad.**
+
+```{r}
+
+sort(degree(yeast), decreasing = T) [1:10] # Degree, con mas conexiones. En orden decresciente para que tome los primeros 10 con mas conexiones
+
+sort(eccentricity(yeast), decreasing = F) [1:10] # Excentricidad.En orden ascendiente, ya que si tiene un menor valor, estara mas cerca del centro
+
+sort(betweenness(yeast), decreasing = T) [1:10] # Betweenness. En orden decresciente, los que tienen caminos mas cortos
+
+
+```
+
+**i. Clusterizar la red por al menos dos métodos y determinar el tamaño del clúster más grande.**
+
+```{r}
+uno <- cluster_infomap(yeast)
+table(membership(uno))[1]
+
+dos <- cluster_fast_greedy(yeast)
+table(membership(dos))[1]
+
+tres <- cluster_leading_eigen(yeast)
+table(membership(tres))[1]
+
+```
+
+**j. Determine si la red es de mundo pequeño, ultra pequeño u otra.**
+
+```{r}
+
+
+```
+
+Jee, es de mundo ultra pequeño, no están los nodos conectados tanto entre sí, eso se puede observar con la gráfica de la distribución de las conectividades, y que solo quitando los 10 nodos con más conectividades se vio un impacto (no tan grande) en la red, muy probablemente quitando cualquier otro nodo al azar, sería una diferencia super pequeña.
+
