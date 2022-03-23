@@ -1,0 +1,92 @@
+---
+title: "Red Booleana"
+author: "Mayela Fosado"
+date: "23/3/2022"
+output: 
+  rmdformats::downcute
+  
+---
+<style type="text/css">
+  body{
+    font-family: Century Gothic;
+  font-size: 11pt;
+  
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### **Red Booleana**
+
+Generar una red de regulación transcripcional con 5 nodos y, al menos, 7 interacciones regulatorias, escoge al menos 3 inhibiciones.
+
+<p style="color:#219F94">**Red de Regulación Transcripcional**</p>
+
+![ ](https://lh3.googleusercontent.com/pw/AM-JKLV4CkgW6kzB4325e9YDx24uySfz_I60cFtvzT4PLnOaXyNZGprRc7OTUbRJo8-l_RJpwjIggjY9C3p6m3zOx1lE418RyquwgGIxHlqC1wN5-gjIHlRyvUmEPi-oYm_0yWsGvAP4nv12kNGPMaZzdbYS=w683-h455-no?authuser=0)
+
+
+## a) Escribe las tablas de verdad de las reglas.
+
+<p style="color:#E4AEC5">**Funciones Booleanas**</p>
+
+![ ](https://lh3.googleusercontent.com/pw/AM-JKLVudrPLNfzXtVmg6QwE0gO8TErX2BfBbLharGIjFhUOJSIFiwJP3m-tp_NdKeTHM4WwvLngXKWutck0tCjlLc6_CLa_cPdN5NPcmS5IM-kqiHumg07J8abNpburn1jagVhIjXV3E3GQxKHaTS0LBe3C=w268-h138-no?authuser=0)
+
+<p style="color:#A2D5AB">**Tablas de Verdad**</p>
+
+![ ](https://lh3.googleusercontent.com/pw/AM-JKLV2WHliq06PF30-l2Y9hPFa7A3Pk8ZOGWmoOZ8S4jXi8AhUoFmEWRE5U1p-3sIOH7pDZBWRv06UMIVgRJpy8XCU4l11PryESOZ48QEVX0kuwOZNF0S3bvIYitPFoUCYWnBRH6dDfVvIzdmpMszr79cv=w561-h483-no?authuser=0)
+
+
+## b) Generar las reglas para hacer la red en Boolnet.
+
+La siguiente información está en un archivo txt para cargarlo y hacer la red.
+
+**V, !X**
+
+**W, V & Y**
+
+**X, W**
+
+**Y, V & !Z**
+
+**Z, W & !X**
+
+```{r}
+library(BoolNet)
+red <- loadNetwork("red_booleana.txt")
+red
+```
+
+Visualizar la red:
+```{r, echo=FALSE}
+plotNetworkWiring(red)
+```
+
+## c) Encontrar los atractores.
+
+```{r}
+atractores <- getAttractors(red)
+atractores
+```
+
+## d) ¿Cuál sería el estado final más probable?
+
+**00100**
+
+Donde X esté prendido, porque al final no hay quien lo inhiba, y es el que menos necesita de condiciones para que esté encendido, y ya que un estado antes W aún seguía activo, pudo mantenerse activo X.
+
+## e) Dibuja todos los estados y sus atractores.
+
+<p style="color:#05595B">**Estados:**</p>
+```{r, echo=FALSE}
+plotAttractors(atractores)
+
+```
+
+<p style="color:#9254C8">**Atractores:**</p>
+
+```{r, echo=FALSE}
+plotStateGraph(atractores)
+
+```

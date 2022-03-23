@@ -1,0 +1,6 @@
+targets, factors
+V, !X
+W, V & Y
+X, W
+Y, V & !Z
+Z, W & !X

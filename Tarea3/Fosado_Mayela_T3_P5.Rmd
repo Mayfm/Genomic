@@ -1,0 +1,426 @@
+---
+title: "Problema Extra"
+author: "Mayela Fosado"
+date: "23/3/2022"
+output: 
+  rmdformats::downcute
+  
+---
+<style type="text/css">
+  body{
+    font-family: Century Gothic;
+  font-size: 11pt;
+  
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### **Redes de interacción proteína-proteína**
+
+Redes de interacción proteína-proteína del paper Evolution of resilence in protein interactomes across the tree of life.
+
+## a) Redes y distribución de conectividades.
+
+**Cargar las redes**
+
+```{r}
+library(igraph)
+
+clavibacter <- read.table("31964.txt")
+red_clavibacter <- graph_from_data_frame(clavibacter, directed = T)
+
+magnaporthe <- read.table("148305.txt")
+red_magnaporthe <- graph_from_data_frame(magnaporthe, directed = T)
+
+borrelia <- read.table("390236.txt")
+red_borrelia <- graph_from_data_frame(borrelia, directed = T)
+
+```
+
+**Distribución de conectividades**
+
+<p style="color:#35858B">**Clavibacter michiganensis sepedonicus**</p>
+
+```{r, echo=FALSE}
+par(bg = "black") #cambiar el fondo
+
+# Distribucion de conectividades
+plot(degree.distribution(red_clavibacter), col = "#4FBDBA", family = "mono", # degree.distribution, calcula la distribucion del degree
+     col.main = "#F6E6E4", # color del titulo
+     col.lab = "#F3F1F5", # color de las etiquetas
+     fg = "#F1F7E7", col.axis = "#F1F7E7", main = "Distribución conectividades" ) # color de los ejes, y cuadro de la grafica
+
+
+```
+
+<p style="color:#9254C8">**Magnaporthe grisea**</p>
+
+```{r, echo=FALSE}
+par(bg = "black") #cambiar el fondo
+
+# Distribucion de conectividades
+plot(degree.distribution(red_magnaporthe), col = "#9145B6", family = "mono", # degree.distribution, calcula la distribucion del degree
+     col.main = "#F6E6E4", # color del titulo
+     col.lab = "#F3F1F5", # color de las etiquetas
+     fg = "#F1F7E7", col.axis = "#F1F7E7", main = "Distribución conectividades" ) # color de los ejes, y cuadro de la grafica
+
+```
+
+<p style="color:#F2789F">**Borrelia afzelii**</p>
+
+```{r, echo=FALSE}
+par(bg = "black") #cambiar el fondo
+
+# Distribucion de conectividades
+plot(degree.distribution(red_borrelia), col = "#F999B7", family = "mono", # degree.distribution, calcula la distribucion del degree
+     col.main = "#F6E6E4", # color del titulo
+     col.lab = "#F3F1F5", # color de las etiquetas
+     fg = "#F1F7E7", col.axis = "#F1F7E7", main = "Distribución conectividades" ) # color de los ejes, y cuadro de la grafica
+
+```
+
+## b) Promedio de las conectividades de las redes
+
+<p style="color:#35858B">**Clavibacter michiganensis sepedonicus**</p>
+
+```{r}
+
+mean(degree(red_clavibacter))
+
+```
+
+<p style="color:#9254C8">**Magnaporthe grisea**</p>
+
+
+```{r}
+
+mean(degree(red_magnaporthe))
+
+```
+
+<p style="color:#F2789F">**Borrelia afzelii**</p>
+
+
+```{r}
+
+mean(degree(red_borrelia))
+
+```
+
+
+## c) Densidad de las redes.
+
+
+<p style="color:#35858B">**Clavibacter michiganensis sepedonicus**</p>
+
+```{r}
+
+# Opcion 1:
+graph.density(red_clavibacter)
+
+# Opcion 2: 
+edge_density(red_clavibacter)
+```
+
+<p style="color:#9254C8">**Magnaporthe grisea**</p>
+
+
+```{r}
+
+# Opcion 1:
+graph.density(red_magnaporthe)
+
+# Opcion 2: 
+edge_density(red_magnaporthe)
+```
+
+<p style="color:#F2789F">**Borrelia afzelii**</p>
+
+
+```{r}
+
+# Opcion 1:
+graph.density(red_borrelia)
+
+# Opcion 2: 
+edge_density(red_borrelia)
+```
+
+
+## d) Componentes de la red, sin los 10 nodos más conectados.
+
+<p style="color:#35858B">**Clavibacter michiganensis sepedonicus**</p>
+
+
+```{r}
+
+c_10 <- sort(degree(red_clavibacter), decreasing = T)[1:10] # nodos mas conectados
+ 
+c_10
+
+clav <- red_clavibacter #renombrar los datos
+
+clav <- delete_vertices (clav, sample (c_10)) #remover los nodos de "clav" los datos renombrados
+
+components(clav) # total de componentes
+
+
+```
+
+<p style="color:#9254C8">**Magnaporthe grisea**</p>
+
+```{r}
+
+m_10 <- sort(degree(red_magnaporthe), decreasing = T)[1:10] # nodos mas conectados
+ 
+m_10
+
+mag <- red_magnaporthe #renombrar los datos
+
+mag <- delete_vertices (mag, sample (c_10)) #remover los nodos de "clav" los datos renombrados
+
+components(mag) # total de componentes
+
+
+```
+
+
+<p style="color:#F2789F">**Borrelia afzelii**</p>
+
+```{r}
+
+b_10 <- sort(degree(red_borrelia), decreasing = T)[1:10] # nodos mas conectados
+ 
+b_10
+
+bor <- red_borrelia #renombrar los datos
+
+bor <- delete_vertices (bor, sample (c_10)) #remover los nodos de "clav" los datos renombrados
+
+components(bor) # total de componentes
+
+
+```
+
+
+## e) Robustez sin las 10 proteínas más conectadas.
+
+Librería para la función de robustez.
+
+```{r}
+
+library (brainGraph)
+
+```
+
+<p style="color:#35858B">**Clavibacter michiganensis sepedonicus**</p>
+
+
+```{r}
+
+robustness(clav, measure = "degree")
+
+
+```
+
+<p style="color:#9254C8">**Magnaporthe grisea**</p>
+
+
+```{r}
+
+robustness(mag, measure = "degree")
+
+```
+
+<p style="color:#F2789F">**Borrelia afzelii**</p>
+
+
+```{r}
+
+robustness(bor, measure = "degree")
+
+
+```
+
+Interpretación de los resultados:
+
+La función arroja una tabla con ciertos elementos para comprender el impacto de remover los nodos (en este caso). 
+
+**Type:** describe lo que se está analizando. 
+
+**Measure:** es la medida en la que se ordenan los vertices, se puede usar random, btwn.cent y degree, en este caso se utilizó degree.
+
+**Comp.size:** el tamaño que queda una vez que se remueven los nodos.
+
+**Comp.pct** la relación entre el tamaño máximo una vez que se remueve.
+
+**Removed.pct:** el impacto de remoción.
+
+## f) 10 proteínas más importantes con su función.
+
+<p style="color:#35858B">**Clavibacter michiganensis sepedonicus**</p>
+
+```{r}
+
+sort(betweenness(red_clavibacter), decreasing = T) [1:10] 
+
+```
+
+#### **Proteínas:**
+
+**CMS_2456:** Enolasa
+
+Cataliza la conversión reversible de 2-fosfoglicerato en fosfoenolpiruvato, es importante en la degradación de carbohidratos en la glucólisis.
+
+**CMS_1988:** Gliceraldehído-3-fosfato deshidrogenasa
+
+Enzima importante en la glicólisis y cataliza en el primer paso de la vía, convierte el D-gliceraldehído-3-fosfato eb 3-fosfo-D-glicerol fosfato.
+
+**CMS_1987:** Fosfoglicerato quinasa
+
+Implicada en la subvía que sintetiza piruvato a partir de D-gliceraldehído-3-fosfato, a su vez forma parte de la vía de la glucólisis, y la degradación de carbohidratos.
+
+**CMS_1980:** Glucosa-6-fosfato isomerasa
+
+Cataliza la reacción D-glucosa-6-fosfato a D-fructosa-6-fosfato.
+
+**CMS_1089:** Piruvato deshidrogenasa
+
+Enzima que cataliza la reacción de piruvato y una lipoamida y se forma la dihidrolipoamida acetilada y CO2.
+
+**CMS_2004:** Piruvato quinasa
+
+Participa en el paso 5 de la subvía que sintetiza piruvato a partir dde D-gliceraldehído-3-fosfato.
+
+**CMS_1939:** Fosfoenolpiruvato carboxilasa
+
+Cataliza la adición de bicarbonata al fosfoenolpiruvato y forma el compuesto de cuatro carbonos oxalacetato y fosfato inorgánico.
+
+**CMS_2203:** Citrato sintasa
+
+Participa en el paso 1 de la subvía que sintetiza isocitrato a partir de oxaloacetato.
+
+**CMS_1932:** Putativa aldolasa
+
+Involucrada en la glucólisis, descompone la glucosa en energía.
+
+**CMS_2413** Fructosa-bifosfato aldolasa
+
+Cataliza la condensación aldólica del dihidroxiacetona fosfato con G3P y forma fructosa 1,6-bifosfato en la gluconeogénesis y la reacción inversa de la glucólisis.
+
+<p style="color:#9254C8">**Magnaporthe grisea**</p>
+
+```{r}
+
+sort(betweenness(red_magnaporthe), decreasing = T) [1:10] 
+
+```
+
+#### **Proteínas:**
+
+**A4QR60:** Glucosa-6-fosfato isomerasa
+
+Cataliza la isomerización reversible de la glucosa-6-fosfato a fructosa-6-fosfato.
+
+**A4QSX4:** Subunidad C del factor 3 de iniciación de la traducción eucariótica
+
+Parte del complejo factor de iniciación de la traducción eucariotica, importante en la síntesis de proteínas.
+
+**A4QT54:** Distribución y morfología mictocondrial proteína 34
+
+Parte del complejo ERMES/MDM, que sirve de anclaje para conectar el retículo endoplásmico y las mitocondrias.
+
+**A4QTI8:** Subunidad H del factor de iniciación de la traducción eucariota
+
+Componente del complejo de inicio de la traducción eucariota (eIF-3), presente en la síntesis de proteínas.
+
+**A4QTA3:** Subunidad J del factor de iniciación de la traducción eucariota
+
+Componente del complejo de inicio de la traducción eucariota (eIF-3), presente en la síntesis de proteínas.
+
+**A4QTI8:**  Distribución y morfología mictocondrial proteína 10
+
+Parte del complejo ERMES/MDM, que sirve de anclaje para conectar el retículo endoplásmico y las mitocondrias.
+
+**A4QUL1:** Proteína de transporte SEC24
+
+Componente del complejo de proteínas de cubierta II, promueven la formación de vesículas de transporte desde el retículo endoplásmico.
+
+**A4QZL9:** Subunidad B del factor de iniciación de la traducción
+
+Componente del complejo de inicio de la traducción eucariota (eIF-3), presente en la síntesis de proteínas.
+
+**A4R0E5:** Subunidad F del factor de iniciación de la traducción
+
+Componente del complejo de inicio de la traducción eucariota (eIF-3), presente en la síntesis de proteínas.
+
+**A4R0J5:** Proteína de membrana integral de ensamblaje de la ATPasa vacuolar VMA21
+
+Necesaria para el ensamblaje del complejo V0 de la ATPasa vacuolar en el retículo endoplásmico.
+
+<p style="color:#F2789F">**Borrelia afzelii**</p>
+
+```{r}
+
+sort(betweenness(red_borrelia), decreasing = T) [1:10] 
+
+```
+
+#### **Proteínas:**
+
+**BAPKO_0774:** Glucosa-6-fosfato isomerasa
+
+Cataliza la isomerización reversible de la glucosa-6-fosfato a fructosa-6-fosfato.
+
+**BAPKO_0888:**  No caracterizada
+
+**BAPKO_0884:** No caracterizada
+
+**BAPKO_0771:** Proteína de la familia de reparación del DNA por esisión de la superbase HhH-GPD
+
+Involucrada en el empaquetamiento del DNA, con actividad de hidrolasa, actina, participa en la reparación de escisión de bases.
+
+**BAPKO_0601:** UDP-N-acetilmuramoylalanina-D-glutamato
+
+Cataliza la adición de glutamato. Participa en la formación de la pared celular.
+
+**BAPKO_0204:** UDP-N-acetilmuramoyl-tripeptido sintetasa
+
+Cataliza la adición de un aminoácido en la bisíntesis del petidoglicano de la pared celular bacteriana.
+
+**BAPKO_0315:** Proteína de la familia de la poliprenil sintetasa
+
+Con actividad de transferasa e involucrada en la biosítesis de procesos isoprenoides.
+
+**BAPKO_0492:** No caracterizada
+
+**BAPKO_0846:** No caracterizada
+
+**BAPKO_0870:** UDP-N-acetilmuramato-L-alanina ligasa
+
+Involucrado en la formación de la pared celular.
+
+
+## g) Redes en Cytoscape.
+
+<p style="color:#35858B">**Clavibacter michiganensis sepedonicus**</p>
+
+![ ](https://lh3.googleusercontent.com/pw/AM-JKLVxIjoJFdSw5ruHplQ3kJWNc8KyPPTD4SKdWHqsLuazvPWj3aT6pOKooFRFMAR-j1wk__SXw0DB2PHbHtTjqXGJ6UsxKFiWJ7bx1sSbarC9dPfZE0kn3a89ZsqBtff2CxnpU0nR6PRxRXBHo6RdB-ok=w683-h306-no?authuser=0)
+
+En la red se pueden observar algunos nodos de diferente color que representan en su mayoría enzimas relacionadas con la glucólisis y que estas se encuentran cercanas entre ellas, por lo que la mayoría de esos nodos pueden estar relacionado a ello.
+
+
+<p style="color:#9254C8">**Magnaporthe grisea**</p>
+
+![ ](https://lh3.googleusercontent.com/pw/AM-JKLXor_81I9nsIvzno4Jas8B5wXrWyGb2mGFncd8y8RoU4fWbuxZFkGrL2bFUlSkDTzrG44wfAkOFM83YZkN-jlVmX3Fgj3URUDRTidSxu-dp_ynQ2wWwrk-i8UmmKz482sEHm8ELEwCz4xJwbDCeuj9U=w683-h293-no?authuser=0)
+
+En la red se observan nodos de diferente color los verdes se encuentran relacionados con la traducción y los azules con la distribución y morfología de la mitocondria. A diferencia de las otras redes, esta es una pequeña para poder visualizar de mejor manera cómo se relaciona la función de las proteínas con sus conexiones en la red.
+
+<p style="color:#F2789F">**Borrelia afzelii**</p>
+
+![ ](https://lh3.googleusercontent.com/pw/AM-JKLX21-cajw3FBimzOCFociFZ3IEwLFG7x5s9Vn9i1ec9Uo2-NBGe693y1W7u0hcym8C4Kw4aL1EHDwVfkMIrMI2NWwGFvIyDaKlM_qUSzwm-Zue8OpRuQlFvmbqrsWPJkhTm2uZPEYoyGnDdu8srp3Tk=w683-h293-no?authuser=0)
+
+En esta red, se puede observar que destacan 2 colores diferentes, los nodos verdes están relacionados con UDP-N-acetilmuramoyl y los azules son proteínas que no han sido caracterizadas.

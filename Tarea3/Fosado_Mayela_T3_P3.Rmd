@@ -1,0 +1,426 @@
+---
+title: "Red de Co-gustos"
+author: "Mayela Fosado"
+date: "23/3/2022"
+output: 
+  rmdformats::downcute
+  
+---
+<style type="text/css">
+  body{
+    font-family: Century Gothic;
+  font-size: 11pt;
+  
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### **Red Dicotómica & Red Pesada**
+
+```{r}
+
+library(BoolNet)
+
+library(igraph)
+
+load("red_cogustos1.RDS")
+
+red_pesada # nombre del objeto original
+
+is_weighted(red_pesada)
+
+
+load("red_cogustos.RDS")
+
+red_nopesada # nombre del objeto original
+
+is_weighted(red_nopesada)
+
+
+```
+
+
+## a) Utilizar al menos 3 layouts (D & P).
+
+### **RED PESADA**
+
+ <p style="color:#219F94">**Layout with mds**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_pesada, vertex.color = "#94B4A4", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#D2F5E3", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_with_mds)
+
+
+```
+
+ <p style="color:#219F94">**Layout as tree**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_pesada, vertex.color = "#94B4A4", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#D2F5E3", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_as_tree)
+
+
+```
+
+<p style="color:#219F94">**Layout in circle**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_pesada, vertex.color = "#94B4A4", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#D2F5E3", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_in_circle)
+
+
+```
+
+<p style="color:#219F94">**Layout on grid**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_pesada, vertex.color = "#94B4A4", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#D2F5E3", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_on_grid)
+
+
+```
+
+<p style="color:#219F94">**Layout randomly**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_pesada, vertex.color = "#94B4A4", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#D2F5E3", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_randomly)
+
+
+```
+
+<p style="color:#219F94">**Layout with gem**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_pesada, vertex.color = "#94B4A4", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#D2F5E3", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_with_gem)
+
+
+```
+
+<p style="color:#219F94">**Layout with lgl**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_pesada, vertex.color = "#94B4A4", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#D2F5E3", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_with_lgl)
+
+
+```
+
+ 
+### **RED DICOTÓMICA**
+ 
+ <p style="color:#E5C5B5">**Layout with mds**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_nopesada, vertex.color = "#FFBBBB", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#F7E2E2", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_with_mds)
+
+
+```
+
+ <p style="color:#E5C5B5">**Layout as tree**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_nopesada, vertex.color = "#FFBBBB", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#F7E2E2", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_as_tree)
+
+
+```
+
+<p style="color:#E5C5B5">**Layout in circle**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_nopesada, vertex.color = "#FFBBBB", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#F7E2E2", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_in_circle)
+
+
+```
+
+<p style="color:#E5C5B5">**Layout on grid**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_nopesada, vertex.color = "#FFBBBB", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#F7E2E2", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_on_grid)
+
+
+```
+
+<p style="color:#E5C5B5">**Layout randomly**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_nopesada, vertex.color = "#FFBBBB", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#F7E2E2", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_randomly)
+
+
+```
+
+<p style="color:#E5C5B5">**Layout with gem**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_nopesada, vertex.color = "#FFBBBB", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#F7E2E2", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_with_gem)
+
+
+```
+
+<p style="color:#E5C5B5">**Layout with lgl**</p>
+
+
+```{r, echo=FALSE}
+
+par(bg = "black")
+
+plot(red_nopesada, vertex.color = "#FFBBBB", vertex.shape = "sphere", vertex.size = 21,
+     edge.color = "#F7E2E2", edge.arrow.size = 0.15, edge.curved = 0.3, 
+     vertex.label.font = 15, vertex.label.color = "#F1F7E7", vertex.label.cex = 0.5, 
+     layout = layout_with_lgl)
+
+
+```
+
+
+
+## b) Distribución de las conectividades (D).
+
+```{r, echo=FALSE}
+par(bg = "black") #cambiar el fondo
+
+# Distribucion de conectividades
+plot(degree.distribution(red_nopesada), col = "#79B4B7", family = "mono", # degree.distribution, calcula la distribucion del degree
+     col.main = "#F6E6E4", # color del titulo
+     col.lab = "#F3F1F5", # color de las etiquetas
+     fg = "#F1F7E7", col.axis = "#F1F7E7", main = "Distribución conectividades" ) # color de los ejes, y cuadro de la grafica
+
+
+```
+
+## c) Nodos más conectados (D).
+
+```{r}
+
+sort(degree(red_nopesada), decreasing = T)[1:5]
+
+```
+
+## d) Nodos más importantes con tres medidas de centralidad (D).
+
+```{r}
+
+sort(degree(red_nopesada), decreasing = T) [1:5] # Degree, con mas conexiones. En orden decresciente para que tome los primeros 10 con mas conexiones
+
+sort(eccentricity(red_nopesada), decreasing = F) [1:5] # Excentricidad.En orden ascendiente, ya que si tiene un menor valor, estara mas cerca del centro
+
+sort(betweenness(red_nopesada), decreasing = T) [1:5] # Betweenness. En orden decresciente, los que tienen caminos mas cortos
+
+```
+
+## e) Clusterizar por al menos 3 métodos (D & P).
+
+### **RED PESADA**
+
+
+ <p style="color:#5B7DB1">**Cluster optimal**</p>
+
+
+```{r, echo=FALSE}
+par(bg = "black") #cambiar el fondo
+
+dos <- cluster_optimal(red_pesada)
+table(membership(dos)) # total de personas en cada cluster
+
+# Plot del cluster
+plot(dos, red_pesada, edge.color = "white", vertex.label.color = "#F1F7E7", vertex.label.font = 15, vertex.label.cex = 0.7, edge.arrow.size = 0.15)
+
+```
+
+ <p style="color:#5B7DB1">**Cluster walktrap**</p>
+
+
+```{r, echo=FALSE}
+par(bg = "black") #cambiar el fondo
+
+
+tres <- cluster_walktrap(red_pesada)
+table(membership(tres)) # total de personas en cada cluster
+
+# Plot del cluster
+plot(tres, red_pesada, edge.color = "white", vertex.label.color = "#F1F7E7", vertex.label.font = 15,vertex.label.cex = 0.7, edge.arrow.size = 0.15)
+
+```
+
+
+### **RED DICOTÓMICA**
+
+ <p style="color:#557B83">**Cluster optimal**</p>
+
+
+```{r, echo=FALSE}
+par(bg = "black") #cambiar el fondo
+
+dos <- cluster_optimal(red_nopesada)
+table(membership(dos)) # total de personas en cada cluster
+
+# Plot del cluster
+plot(dos, red_nopesada, edge.color = "white", vertex.label.color = "#F1F7E7", vertex.label.font = 15,vertex.label.cex = 0.7, edge.arrow.size = 0.15)
+
+```
+
+ <p style="color:#557B83">**Cluster walktrap**</p>
+
+
+```{r, echo=FALSE}
+par(bg = "black") #cambiar el fondo
+
+tres <- cluster_walktrap(red_nopesada)
+table(membership(tres)) # total de personas en cada cluster
+
+# Plot del cluster
+plot(tres, red_nopesada, edge.color = "white", vertex.label.color = "#F1F7E7", vertex.label.font = 15,vertex.label.cex = 0.7, edge.arrow.size = 0.15)
+
+```
+
+ <p style="color:#557B83">**Cluster spinglass**</p>
+
+
+```{r, echo=FALSE}
+par(bg = "black") #cambiar el fondo
+
+cuatro <- cluster_spinglass(red_nopesada)
+table(membership(cuatro)) # total de personas en cada cluster
+
+# Plot del cluster
+plot(cuatro, red_nopesada, edge.color = "white", vertex.label.color = "#F1F7E7", vertex.label.font = 15,vertex.label.cex = 0.7, edge.arrow.size = 0.15)
+```
+
+
+## f) Las redes son dirigidas o no.
+
+Cargar las matrices, previamente guardadas.
+
+```{r}
+
+load("matriz_pesada.RDS")
+
+load("matriz_nopesada.RDS")
+```
+
+### **Matriz de la red Pesada**
+
+```{r}
+
+# funcion isSymmetric.matrix - Cualquier matriz
+ Directed <- function (Directed) {
+  if (isSymmetric.matrix (mat_ady_1) == T) {
+  print ("La matriz es simétrica, por lo tanto No Dirigida")
+    } else {
+  print ("La matriz no es simétrica, por lo tanto Dirigida")
+ }
+}
+
+Directed()
+
+```
+
+
+### **Matriz de la red Dicotómica**
+
+```{r}
+
+ Directed <- function (Directed) {
+  if (isSymmetric.matrix (mat_ady_3) == T) {
+  print ("La matriz es simétrica, por lo tanto No Dirigida")
+    } else {
+  print ("La matriz no es simétrica, por lo tanto Dirigida")
+ }
+}
+
+Directed()
+
+```
+
+## g) ¿Cómo podrías encontrar clicas, si las hay?
+
+Observando los clusters que se forman en el punto E, y ver los clusters que más se repitan con eso podrías determinar las clicas.

@@ -1,0 +1,67 @@
+---
+title: "Red de Señalización"
+author: "Mayela Fosado"
+date: "23/3/2022"
+output: 
+  rmdformats::downcute
+  
+---
+<style type="text/css">
+  body{
+    font-family: Century Gothic;
+  font-size: 11pt;
+  
+}
+</style>
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## **Red de Señalización**
+
+![Figura 1](https://lh3.googleusercontent.com/pw/AM-JKLX3zG8_w-bRvHapvzZi1203HPLx9Q2ZG7sV1F7abNcCSR_dGP65gWNYeQsAOGt8coIO0mp9spT8Cl5P6tmQZZ8Uh1Kg21UZMgC84TU-P6c1pBnrtumnZgj7WVqROtB0pUkUSv-gxSPMys5-nkfCkf0k=w323-h236-no?authuser=0)
+
+Con la figura 1, responder:
+
+## **a) Elabora una representación verbal de la red.**
+
+1. El ion de Ca induce la expresión de NOS, activa a PLC, al AnionME, KEV y al CaATPase.
+
+2. A su vez CaATPase, lo inhibe y limita a Ca, el Ca también necesita de CIS para que favorezca su inducción.
+
+3. Para que esté CIS activo necesita de cADPR, cGMP e InsP3, pero para que todo esto se dé, tienen que estar otros activos, los cuales comienzan a inducirse por Ca.
+
+4. Ca activa a NOS y NOS a su vez activa a No, que activa a GC y APRc, GC activa a cGMP y activa a CIS. En cambio, ADPRc activa a cADPR que también es necesario para activar a CIS.
+
+5. InsP3, que también activa a CIS, es activado por PLC, que a su vez es activado por Ca y activa a CIS.
+
+6. Además de que Ca activa a CaATPase y a NOS, activa a KEV y al AnionEM, e inhibe a H+ATPase, los primeros dos activan a Depolar, el cual inhibe a CalM que también activa a Ca, por lo que cuando Depolar contribuye para inhibir a Ca, por medio de CalM.
+
+7. AnionEM activa a Closure, el cual es activado también por KOUT y KAP, ambos son activados por Depolar, pero este es inhibido por KOUT.
+
+8. Cuando no está Ca y está activo H+ATPase inhibe a Depolar, al igual que KOUT.
+
+## **b) Elabora las posibles reglas de la red.**
+
+![ ](https://lh3.googleusercontent.com/pw/AM-JKLVEv6PUQtXcFmAy46Tkll2bgcKUvNcROrzO38XOifEgfoLbsCUzu5w1gk0zX32DEX_mEZ8VcgSSn-Bt70U8MIvMseInyARkY6_oInMCneTtW-CC_R5ZLOE-d-By7c1qm7dB5xqnhRiAKQ8AYr2I56Kc=w606-h468-no?authuser=0)
+
+## **c) Encontrar los atractores y discutir biológicamente.**
+
+```{r }
+library(BoolNet)
+red <- loadNetwork("Red_senn.txt")
+red
+
+atractores <- getAttractors(red)
+atractores
+
+plotAttractors(atractores)
+```
+
+En total se obtuvo un 1 atractor y 524288 estados, lo cual me sorprendió bastante, donde solo quedan CalM y H+ATPase activos.
+
+Para el total de estados, 1 atractor es muuuuy poco, por lo que, es probable que ya que, en las reglas solo utilicé AND y no OR, eso haya afectado el número de atractores. Probablemente se hubieran obtenido más, ya que no era necesario que por ejemplo en Closure hubiera 3 activándolo.
+
+Entonces, su signficado de esto es, que los atractores representan los genotipos que pueden existir, y en este caso solo se obtuvo uno y pues solo hay una cuenca de atracción hacia ese.
+
+
