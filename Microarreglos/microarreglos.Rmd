@@ -1,0 +1,235 @@
+---
+title: "Microarreglos"
+author: "Mayela Fosado"
+date: "23/3/2022"
+output: 
+  rmdformats::downcute
+  
+---
+<style type="text/css">
+  body{
+    font-family: Century Gothic;
+  font-size: 11pt;
+  
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+### **Expresión diferencial y anotación**
+
+# Cargar archivo de la parte anterior **"Microarreglos Affymetrix"** y librerías"
+
+Archivo:
+
+```{r}
+
+exprs <- read.table("expr_normalizada.txt", header=TRUE, row.names=1)
+
+```
+
+Librerías:
+
+```{r, warning.messages = F}
+
+library(Biobase)
+library(limma)
+
+```
+
+## Revisar los datos
+
+```{r}
+
+head(exprs)
+
+boxplot(exprs, col=c("#711A75", "#05595B", "#C5D8A4", "#E4AEC5", "#243D25", "#F68989"))
+
+```
+
+Con el boxplot nos ayuda a observar que se encuentren normalizados, y todo parece correcto puesto que no hay barras de error de diferentes tamaño, ni outliers.
+
+# Calcular la expresión diferencial
+
+Crear matrices para las muestras del diseño experimental y los contrastes. Diferenciando las muestras KO y WT, guardándolas en un objeto "des". Otro objeto "contMatrix" que especifidque que se compara KO vs WT.
+
+```{r}
+
+types <- factor(c("KO", "KO", "KO", "WT", "WT", "WT" ))
+types
+
+design <- model.matrix(~ 0+types)
+
+colnames(design) = levels(types)
+
+design
+
+contMatrix <- makeContrasts(KO-WT, levels=design)
+
+contMatrix
+
+```
+
+## Con la librería limma
+
+```{r}
+
+fit <- lmFit(exprs,design)  
+
+fit2 <- contrasts.fit(fit,contMatrix)
+
+fit2 <- eBayes(fit2)
+
+```
+
+La función "eBayes" ayuda a calcular por medio del método Bayesiano, y ya tenemos valor de *p*.
+
+## Lista de genes diferencialmente expresados, ordenados por el valor de *p*.
+
+```{r, warning.messages = F}
+
+topTable(fit2, number=20, sort.by="p")
+
+```
+
+Se puede apreciar cómo están ordenados de acuerdo al valor de *p* y que todos ellos son menores a 0.05, así que son estadísticamente significativos.
+
+# Anotando los datos de expresión
+
+Para saber la identidad de los genes, son los siguientes pasos, con ayuda de la librería <p style="color:#219F94">**mouse4302.db**</p>
+
+```{r, warning.messages = F}
+
+library(mouse4302.db)
+
+```
+
+Ver los tipos de datos que contiene la librería.
+
+```{r}
+
+mouse4302()
+
+```
+Con ayuda de la lista **fit2** podemos ver los ids para identificar los que son de nuestro interés. Esta se encuentra en los genes y,  verlos.
+
+Lo extraemos del objeto fit2.
+
+```{r}
+
+probes <- fit2$genes$ID
+
+```
+
+Ahora sí los datos necesarios para la librería <p style="color:#219F94">**mouse4302.db**</p> están listos.
+Buscamos el nombre descriptivo, el nombre corto y el identificador único.
+
+```{r}
+
+# Nombre descriptivo
+
+description <- mget (probes, mouse4302GENENAME)
+
+# Nombre corto
+
+symbols <- mget(probes,mouse4302SYMBOL)
+
+# Identificador
+
+entrezids <- mget(probes,mouse4302ENTREZID)
+
+```
+
+Agregar la información al objeto **fit2**.
+
+```{r}
+
+fit2$genes$EntrezID = unlist(entrezids)
+
+fit2$genes$Symbol = unlist(symbols)
+
+fit2$genes$Description = unlist(description)
+
+```
+
+Corroborar que tengamos las columnas con los datos.
+
+```{r}
+
+topTable(fit2, number=20, sort.by="p")
+
+```
+
+## Visualización de los datos
+
+Elaborar un volcanoplot.
+
+```{r}
+
+volcanoplot(fit2, highlight = 10, names = fit2$genes$Symbol, main = "VOLCANO PLOT", family = "mono", col = "#05595B")
+
+```
+
+Aquí ya se puede visualizar las sondas con su nombre y en el eje de las X son los valores de Log2 Fold Change, y así poder ver si se diferencia; mientras más grande sea más diferencia. En el eje de las Y está el valor de *p*, en el que mientras más arriba estén, más valor significativo tiene.
+
+
+## Generar tabla con los resultados
+
+Dejar las sondas con criterios que queramos, en este caso será con un valor fold-change mayor a 1.5 y en el valor de *p* menor a 0.05
+
+```{r}
+
+deTable <- topTable(fit2, number=nrow(fit2), lfc=log2(1.5), p.value=0.05)
+
+dim(deTable)
+
+```
+
+Tabla con todos los datos, ordenada por logFC.
+
+```{r}
+
+fullTable <- topTable(fit2, number=nrow(fit2), sort.by="logFC")
+
+dim(fullTable)
+
+```
+
+# Guardar datos
+
+No hay mucho que explicar aquí, solo guardar datos, jaja.
+
+```{r}
+
+write.table(fullTable, file="full_results.txt", row.names=FALSE, sep="\t", quote=FALSE)
+
+```
+
+# Preguntas
+
+<p style="color:#219F94">**¿Cuántas sondas predicen como diferencialmente expresadas?**</p>
+
+219 basándome en el punto de corte que se hizo para crear la tabla.
+
+<p style="color:#219F94">**¿Cuántas decrementan y cuántas aumentan su expresión en el KO?**</p>
+
+```{r}
+
+
+
+```
+
+<p style="color:#219F94">**¿Cuántos genes únicos hay en las listas?**</p>
+
+```{r}
+
+unicos <- unique(fit2)
+
+length(unicos)
+
+```
+24 son los genes únicos.
+
+

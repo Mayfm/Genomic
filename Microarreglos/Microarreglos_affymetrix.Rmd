@@ -1,0 +1,199 @@
+---
+title: "Microarreglos Affymetrix"
+author: "Mayela Fosado"
+date: "23/3/2022"
+output: 
+  rmdformats::downcute
+  
+---
+<style type="text/css">
+  body{
+    font-family: Century Gothic;
+  font-size: 11pt;
+  
+}
+</style>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Introducción
+
+Cargar las librerías necesarias.
+
+```{r, warning.messages = F}
+
+library(affy)
+library(mouse4302cdf)
+library(pvclust)
+library(vsn)
+
+```
+
+#### Archivos para usar
+
+Descargar aquí: <http://datos.langebio.cinvestav.mx/~cei/cursos/R/datos/mir155.zip>
+
+## Cargar los datos de Affymetrix
+
+```{r}
+
+pd <- read.table("pdata.txt", header = T, as.is = T)
+
+pd
+
+```
+
+Utilizar la función <p style="color:#219F94">**ReadAffy**</p>, para leer archivos en CEL.
+
+```{r}
+
+affyData <- ReadAffy(filenames=pd$filename)
+
+```
+
+Agregar la información de pd con <p style="color:#219F94">**pData**</p>.
+
+```{r}
+
+pd <- pData(affyData) 
+
+```
+
+Agregar nombre corto para identificar la muestra.
+
+```{r}
+
+ # sampleNames(affyData) = pd$name
+
+affyData
+
+```
+
+## Análisis de la calidad
+
+```{r}
+
+boxplot(affyData, col=c("#711A75", "#05595B", "#C5D8A4", "#E4AEC5", "#243D25", "#F68989"), family = "mono")
+
+hist(affyData, col=c("#711A75", "#05595B", "#C5D8A4", "#E4AEC5", "#243D25", "#F68989"), family = "mono")
+
+```
+
+Imagen para la tercera muestra
+
+```{r}
+
+image(affyData[,3], family = "mono")
+
+```
+
+## Heatmap
+
+```{r}
+
+heatmap(cor(exprs(affyData)), symm = T, family = "mono")
+
+```
+
+## Dendrograma
+
+```{r}
+
+corClust <-  pvclust(exprs(affyData), nboot=1, method.dist="correlation")
+
+plot(corClust, family = "mono")
+
+
+```
+
+## PCA
+
+```{r}
+
+pca <- princomp(exprs(affyData))
+
+plot(pca$loadings, main="Análisis de Componentes Principales", col=c("#711A75", "#05595B", "#C5D8A4", "#E4AEC5", "#243D25", "#F68989"),  pch=19, cex=2, family = "mono", cex.main=0.9)
+
+text(pca$loadings, colnames(exprs(affyData)), pos=3, cex=0.8)
+
+```
+
+## Normalización de los datos
+
+Crear valores normalizados
+
+```{r}
+
+
+eset <- rma(affyData)
+eset
+
+
+```
+
+## Calidad post-normalización
+
+```{r}
+
+par(mfrow=c(1,2)) # dos figuras por ventana    
+
+boxplot(affyData, col=c("#711A75", "#05595B", "#C5D8A4", "#E4AEC5", "#243D25", "#F68989", main = " Antes de normalizar", family = "mono", cex.main=0.7))
+
+boxplot(data.frame(exprs(eset)), col=c("#711A75", "#05595B", "#C5D8A4", "#E4AEC5", "#243D25", "#F68989", main = "Después de normalizar", family ="mono", cex.main=0.7))
+
+par(mfrow=c(1,1)) # regresar a una figura
+
+```
+
+## Clústers post-normalización
+ 
+```{r}
+
+par(mfrow=c(1,2))
+
+corClust <- pvclust(exprs(affyData), nboot=1, method.dist="correlation")
+
+plot(corClust, main="Agrupamiento de muestras antes de normalizar", family = "mono", cex.main=0.6)
+
+corClustAfter <- pvclust(exprs(eset), nboot=1, method.dist="correlation")
+
+plot(corClustAfter, main="Agrupamiento de muestras después de normalizar", family = "mono", cex.main=0.6)
+
+par(mfrow=c(1,1))
+
+```
+
+## Promedio de los genes de expresión
+
+```{r}
+
+library(hexbin)
+
+
+meanSdPlot(exprs(eset))
+
+```
+
+**Expresión de un gen**
+
+```{r}
+
+boxplot(data.frame(exprs(eset)), col="#FAD9E6")
+
+lines(exprs(eset)["1428027_at",], lwd=2, type="b", col="#F190B7")
+
+
+```
+
+## Guardar los resultados
+
+```{r}
+
+write.exprs(eset, file="exprs_normalizada.txt")
+
+```
+
