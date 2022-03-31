@@ -1,0 +1,101 @@
+---
+title: "Parte 4"
+author: "Mayela Fosado"
+date: "31/3/2022"
+output: 
+  rmdformats::downcute
+  
+---
+<style type="text/css">
+  body{
+    font-family: Century Gothic;
+  font-size: 11pt;
+  
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Red Booleana
+
+Genera un programa en R que modele lo siguiente: Se tienen tres genes, A,B, y C.
+El gen B está regulado negativamente por A, el A, negativamente por C y el C, negativamente por B.
+
+
+## Cargar librería
+
+
+```{r}
+
+library(BoolNet)
+
+```
+
+
+## Cargar archivo
+
+```{r}
+
+red <- loadNetwork("red_P4.txt")
+red
+
+```
+
+Visualizar la red:
+
+```{r, echo=FALSE}
+
+plotNetworkWiring(red)
+
+```
+
+
+# Preguntas
+
+## 1. ¿Cuántos atractores tiene esta red?
+
+```{r}
+
+atractores <- getAttractors(red)
+atractores
+
+```
+
+Tiene 2 atractores.
+
+## 2. ¿Cual es el estado más probable?
+
+ **100** | **001** | **010**
+
+Porque pues realmente si hay algún otro activo y al final inhibirá el otro.
+
+## 3. ¿Hay atractores cíclicos?
+
+
+```{r, echo=FALSE}
+
+plotStateGraph(atractores)
+
+```
+
+Ambos son cíclicos.
+
+## 4. Dibuja los atractores.
+
+```{r, echo=FALSE}
+
+plotAttractors(atractores)
+
+```
+
+## 5. Dibuja todos los atractores juntos
+
+
+```{r, echo=FALSE}
+
+ plotStateGraph(atractores)
+
+```
+

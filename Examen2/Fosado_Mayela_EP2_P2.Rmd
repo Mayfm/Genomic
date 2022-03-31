@@ -1,0 +1,256 @@
+---
+title: "Parte 2"
+author: "Mayela Fosado"
+date: "31/3/2022"
+output: 
+  rmdformats::downcute
+  
+---
+<style type="text/css">
+  body{
+    font-family: Century Gothic;
+  font-size: 11pt;
+  
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Anotación genómica de los resultados del alineamiento
+
+
+## Cargar las librerías
+
+```{r, warning.messages = F}
+
+library(Biobase)
+library(IRanges)
+
+```
+
+## Introducción IRanges
+
+### Inicio y final de cada rango.
+
+```{r}
+
+x <- IRanges(start = c(11, 35, 40), end = c(20, 50, 63))
+x
+
+```
+ 
+### Extraer información
+
+```{r}
+
+start(x) # Todos los inicios
+end(x)   # Todos los finales
+width(x) # Ancho de cada rango
+range(x) # Rango total de todos
+
+```
+
+### Más funciones:
+
+```{r}
+
+coverage(x) # La suma de la cobertura en cada posición
+
+reduce(x)   # Une los rangos que estan encimados
+
+```
+
+###  ¿Qué quieren hacer?
+
+Obtenemos datos que nos interesan.
+
+```{r}
+
+exons <- reduce(x)
+
+reads <- IRanges(start=c(1,21,30,50,80), width=20)
+
+reads
+
+```
+
+Otra función
+
+```{r}
+
+countOverlaps(exons, reads)
+
+```
+
+# Anotación de un genoma
+
+## Descargar archivo y cargar librerías
+
+```{r, warning.messages = F}
+
+library(rtracklayer)
+
+human <- import("Homo_sapiens_exons_small_e70.gtf")
+
+human
+
+
+```
+
+## Acceder  y trabajar en el nuevo objeto
+
+```{r}
+
+seqnames(human)
+
+ranges(human)
+
+strand(human)
+
+mcols(human)
+
+```
+
+### Hacer una tabla y manipular datos
+
+```{r}
+
+table(mcols(human)$gene_biotype)
+
+
+```
+
+### Dejar columnas de interés
+
+```{r}
+
+mcols(human) <- mcols(human)[,c("source","gene_id","gene_name","gene_biotype")]
+
+mcols(human)
+
+```
+
+## Ejercicios
+
+### ¿Cómo dejar solo anotaciones miRNA?
+
+Con un subset o which, se utilizan para solo obtener los datos que necesites. Se obtiene la información de gene_biotype, y solo queremos lo de miRNA, así que colocamos que solo busque eso.
+
+```{r}
+
+miRNA <- which(human$gene_biotype == "miRNA")
+
+miRNA
+
+
+```
+
+
+### Solo con anotaciones de la cadena "-"
+
+Con un subset o which, se utilizan para solo obtener los datos que necesites. Lo mismo que arriba pero solo buscamos en el sentido que aparezca solo los que tienen sentido negativo.
+
+```{r}
+
+negative <- subset (human, strand (human) == "-")
+
+negative
+
+```
+
+
+# Anotación de secuencias mapeadas
+
+Una forma de visualizar las secuencias mapeadas, es por medio de archivos BAM & SAM, también se pueden usar en linux con samtools y aquí en R se utiliza la librería Rsamtools, que vamos a cargar.
+
+```{r, warning.messages = F}
+
+library(Rsamtools)
+
+
+
+```
+
+Seleccionar los datos del archivo BAM.
+
+- Nombre del cromosoma (sec de ref)
+- Cadena
+- Posición
+- Longitud de la sec mapeada
+
+```{r}
+
+what <- c("rname", "strand", "pos", "qwidth")
+
+param <- ScanBamParam(what=what)
+
+bam <- scanBam("human_mapped_small.bam", param=param)
+
+class(bam)
+
+lapply(bam, names)
+
+```
+
+Construir un GRanges con los datos
+
+```{r}
+
+mapGR <- GRanges(
+   seqnames = bam[[1]]$rname,
+   ranges   = IRanges(start=bam[[1]]$pos, width=bam[[1]]$qwidth),
+   strand   = bam[[1]]$strand
+)
+
+mapGR
+
+
+```
+
+Contar ocurrencias de las secuencias cortas dentro de los rangos.
+
+```{r}
+
+mcols(human)$counts = countOverlaps(human, mapGR)
+
+mcols(human)
+
+```
+
+Agregar más información de nuestro interés, valores, puede ser por tipo de gen o por gen individual.
+
+```{r}
+
+typeCounts = aggregate(mcols(human)$counts, by=list("biotype"=mcols(human)$gene_biotype), sum)
+
+typeCounts
+
+
+```
+
+```{r}
+
+geneCounts = aggregate(mcols(human)$counts, by=list("id"=mcols(human)$gene_name), sum)
+
+head(geneCounts)
+
+```
+
+### Distribución de secuencias cortas en los distintos biotipos
+
+```{r}
+
+minCount = 40000
+typeCountsHigh = typeCounts[typeCounts$x > minCount,]
+typeCountsHigh = typeCountsHigh[order(typeCountsHigh$x),]
+typeCountsHigh = rbind(data.frame("biotype"="other",
+                           "x"=sum(typeCounts$x[typeCounts$x <= minCount])),
+                           typeCountsHigh)
+
+pie(typeCountsHigh$x, labels=typeCountsHigh$biotype, col=rev(rainbow(nrow(typeCountsHigh))),
+    main="Number of aligned reads per biotype", family ="mono")
+
+```
+
