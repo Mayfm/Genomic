@@ -1,0 +1,125 @@
+---
+title: "Reposición"
+author: "Mayela Fosado"
+date: "6/4/2022"
+output: 
+  rmdformats::downcute
+  
+---
+<style type="text/css">
+  body{
+    font-family: Century Gothic;
+  font-size: 11pt;
+  
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Microarreglos
+
+## Leer los datos y cargar las librerías necesarias
+
+```{r}
+
+datos <-read.delim("ExperimentoDesconocido.top.table.tsv", head = T)
+
+View(datos)
+
+```
+
+## Hacer boxplot de expresión
+
+Con los valores de logFC, ya que indica la expresión.
+
+```{r pressure, echo=FALSE}
+
+
+# Boxplot solo por curiosidad
+
+datos_filtr <- datos[, 2:5]
+
+boxplot(datos_filtr, col=c("#711A75", "#05595B", "#C5D8A4", "#E4AEC5"))
+
+# Bocplot de la expresion
+
+boxplot(datos$logFC, col= "#711A75")
+
+```
+
+## Encuentre las sondas que se sobre expresan y sub expresan
+
+Seleccionar valores con  valores de p significativos, seleccionar los de logFC menor a 0 y mayor a 0, subexpresados y sobreexpresados, respectivamente.
+
+```{r}
+
+valores_p<-subset(datos, datos$P.Value<=0.05)
+valores_p
+
+
+#Subexpresados
+
+subexpresados<-subset(datos, datos$logFC<0)
+
+
+#Sobreexpresados
+
+sobreexpresados<-subset(datos, datos$logFC>0)
+
+```
+
+
+## Cuente cuántas sondas se sobre expresan y cuántas se sub expresan.
+
+
+```{r}
+
+#Subexpresados
+
+dim(subexpresados)
+
+#Sobreexpresados
+
+dim(sobreexpresados)
+
+
+```
+
+
+## Elaborar un volcano plot manual
+
+```{r, warning.messages = F}
+
+library(ggplot2)
+
+ggplot(data=datos, aes(x=datos$logFC, y=-log10(datos$P.Value))) + geom_point(col = "#711A75")
+
+
+```
+
+
+## Análisis GO de las tres ontologías.
+
+Guardar objetos con los ID, y checarlo en panter.
+
+```{r}
+
+IDsobr <- sobreexpresados$ID
+
+save(IDsobr,file = "sobreexpresados.txt")
+
+IDsub <- subexpresados$ID
+
+save(IDsub,file = "subexpresados.txt")
+
+```
+
+## Generar gráficas o tablas de las categorías subexpresadas
+
+```{r}
+
+
+```
+
