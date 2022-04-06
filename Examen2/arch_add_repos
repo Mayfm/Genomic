@@ -1,0 +1,9 @@
+Esto es solo como extra, en la que filtré mi lista de id's, la cuales se obtuvieron de R con " " y con otra columna, y para filtrarla utilicé la siguiente línea de código en bash:
+
+awk -F '"' '{print $2}' sobreexpresados.txt > id_sobreexpresados.txt
+
+awk -F '"' '{print $2}' subexpresados.txt > id_subexpresados.txt
+
+con awk, indiqué específicamente que solo quería la segunda columna y le agregué -F, para poner inidicar que las comillas fueran el separador.
+
+Posteriormente, ahora sí se puede pasar a Panther.
