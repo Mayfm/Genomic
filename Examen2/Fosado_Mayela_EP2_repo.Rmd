@@ -108,11 +108,11 @@ Guardar objetos con los ID, y checarlo en panter.
 
 IDsobr <- sobreexpresados$ID
 
-save(IDsobr,file = "sobreexpresados.txt")
+write.table(IDsobr,"sobreexpresados.txt")
 
 IDsub <- subexpresados$ID
 
-save(IDsub,file = "subexpresados.txt")
+write.table(IDsub,"subexpresados.txt")
 
 ```
 
