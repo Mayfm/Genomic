@@ -28,4 +28,4 @@ module load fastqc/0.11.3
 #$ -pe mpich 1
 #
 # Write your commands in the next line
-fastqc /mnt/Timina/alfredvar/alfredvar/seqdata/SENASICA_7/BC51_S37_R1_002.fastq
+fastqc /mnt/Timina/alfredvar/alfredvar/seqdata/SENASICA_7/BC51_S37_R2_002.fastq
