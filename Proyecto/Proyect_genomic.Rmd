@@ -1,0 +1,584 @@
+---
+title: "Proyecto Genómica"
+author: "Mayela Fosado"
+date: "1/6/2022"
+output: 
+  rmdformats::downcute
+  
+---
+<style type="text/css">
+  body{
+    font-family: Century Gothic;
+  font-size: 11pt;
+  
+}
+</style>
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = TRUE) 
+```
+
+
+# **Variabilidad en el genoma mitocondrial humano en personas sanas**
+
+## **Introducción**
+
+En el genoma mitocondrial humano existen mutuaciones puntuales, deleciones e inserciones (indels), los cuales son causa de una gran variedad de enfermedades debilitantes y frecuentemente fatales, que ocurren con una prevalencia mínima de 1:3500, entre estas destacan enfermedades neuromusculares, encelopatías como la neuropatía óptica hereditaria de Leber, síndrome MELAS, síndrome Kearns-Sayre, síndrome de Leigh y diabetes con sordera.
+
+Un punto de debate activo en este es si las mutaciones se generan desde etapas juveniles o solamente durante la vejez.
+
+## **Objetivo**
+
+El objetivo de este proyecto es analizar la variabilidad en el genoma mitocondrial humano en personas sanas.
+
+## **Metodología**
+
+Para el análisis de la carga de variantes en el genoma mitocondrial de placenta humana se obtuvieron muestras en colaboración con la Clínica CER, ubicada en el Corregidora, Querétaro. y la UNAM. Se seleccionó este tejido por ser una fuente accesible y abundante de tejido humano y se obtuvo por medio de cesáreas de embarazos sanos.
+
+Las muestras obtenidas se obtuvieron consentimiento informado y de acuerdo al Protocolo 44.H del Cómite de Ética en la Investigación del Instituto de Neurobiología.
+
+Las secuencias se obtuvieron en un equipo Illumina NexSeq 550 en Duke University.
+
+Para el análisis de las muestras se utiizaron las herramientas fastQC, trimmomatic, segemehl, samtools y mutec2. Los datos de las secuencias fueron proporcionados por el Dr. Alfredo Varela y se encuentran en el servidor de la UNAM, en la ruta de trabajo del mismo. Las muestras abarcan de BC50 a BC58, con excepción de BC53.
+
+### **FastQC**
+
+Se utilizó para revisar el análisis de calidad de las secuencias, y se añadieron los html's con la información contenida en la misma carpeta del proyecto.
+
+Archivos html fastqc <https://github.com/Mayfm/Genomic/tree/main/Proyecto/fastq_html>
+
+En este html solo se pondrá un job (script) de cada muestra como ejemplo, al igual que los html's los demás se encuentran en la carpeta.
+
+```
+
+#$ -S /bin/bash
+
+#
+
+# Nombre
+
+#$ -N fastQC
+
+#
+# Utilizar el directorio donde está el archivo
+#$ -cwd
+#
+# Unir stdout and stderr
+#$ -j y
+#
+# Enviar un correo cuando esté listo el job
+#$ -m e
+#$ -M maye.fosado@gmail.com
+#
+# Si se necesitan módulos, el entorno de los módulos de origen
+. /etc/profile.d/modules.sh
+#
+# Agregar módulos necesarios
+module load fastqc/0.11.3
+#
+#A continuación, número de hilos pedidos a máquina
+#$ -pe mpich 1
+#
+# Comandos
+fastqc /mnt/Timina/alfredvar/alfredvar/seqdata/SENASICA_7/BC50_S37_R1_001.fastq
+
+
+```
+
+
+### **Trimmomatic**
+
+Eliminar secuencias de baja calidad y recortar extremos de baja calidad.
+
+```
+
+#$ -S /bin/bash
+
+#
+
+# Nombre
+
+#$ -N trimm.B
+
+#
+# Use current working directory
+#$ -cwd
+#
+# Join stdout and stderr
+#$ -j y
+#
+#
+# If modules are needed, source modules environment (Do not delete the next line):
+. /etc/profile.d/modules.sh
+#
+# Add any modules you might require:
+module load trimmomatic/0.33
+#
+#pe (Parallel environment)request a parallel environment (MPI, OpenMP). Set your number of requested slots here.
+#A continuación, número de hilos pedidos a máquina
+#$ -pe mpich 1
+#
+# Write your commands in the next line
+
+trimmomatic PE -trimlog trimlog.BC50 BC50_S37_R1_001.fastq BC50_S37_R2_001.fastq BC50_R1_trimP.fastq BC50_R1_trimU.fastq BC50_R2_trimP.fastq BC50_R2_trimU.fastq HEADCROP:9
+trimmomatic PE -trimlog trimlog.BC51 BC51_S38_R1_001.fastq BC51_S38_R2_001.fastq BC51_R1_trimP.fastq BC51_R1_trimU.fastq BC51_R2_trimP.fastq BC51_R2_trimU.fastq HEADCROP:9
+trimmomatic PE -trimlog trimlog.BC52 BC52_S39_R1_001.fastq BC52_S39_R2_001.fastq BC52_R1_trimP.fastq BC52_R1_trimU.fastq BC52_R2_trimP.fastq BC52_R2_trimU.fastq HEADCROP:9
+trimmomatic PE -trimlog trimlog.BC54 BC54_S41_R1_001.fastq BC54_S41_R2_001.fastq BC54_R1_trimP.fastq BC54_R1_trimU.fastq BC54_R2_trimP.fastq BC54_R2_trimU.fastq HEADCROP:9
+trimmomatic PE -trimlog trimlog.BC55 BC55_S42_R1_001.fastq BC55_S42_R2_001.fastq BC55_R1_trimP.fastq BC55_R1_trimU.fastq BC55_R2_trimP.fastq BC55_R2_trimU.fastq HEADCROP:9
+trimmomatic PE -trimlog trimlog.BC56 BC56_S43_R1_001.fastq BC56_S43_R2_001.fastq BC56_R1_trimP.fastq BC56_R1_trimU.fastq BC56_R2_trimP.fastq BC56_R2_trimU.fastq HEADCROP:9
+trimmomatic PE -trimlog trimlog.BC57 BC57_S44_R1_001.fastq BC57_S44_R2_001.fastq BC57_R1_trimP.fastq BC57_R1_trimU.fastq BC57_R2_trimP.fastq BC57_R2_trimU.fastq HEADCROP:9
+trimmomatic PE -trimlog trimlog.BC58 BC58_S45_R1_001.fastq BC58_S45_R2_001.fastq BC58_R1_trimP.fastq BC58_R1_trimU.fastq BC58_R2_trimP.fastq BC58_R2_trimU.fastq HEADCROP:9
+
+
+```
+
+*PE*: lecturas pareadas, en caso de que fuera simple se coloca SE.
+
+
+### **Segemehl**
+
+Alineamiento de secuencias al genoma de referencia. El genoma de referencia se
+obtuvo de la UCSC. 
+
+Ya que el genoma de mitocondria es circular se enlazaron 3kb de la cabeza y 3 kb de la cola. Se realizaron las muestras con el genoma completo y con los dos extremos que fueron unidos.
+
+![ ](https://lh3.googleusercontent.com/pw/AM-JKLUvvv2bz6Zu11nd4jCD6GLZ5i5wCJnx3TgbqUINe47nA1a68WhR0qLSN51HVvGctmIkPGeDEahBsag-QIFj0cJv0HpcalLhMpjrWj6G5zUNZ9TT0QvbRgrnyNAu1FHnxRIodcwoL8r0_h-EpApxiHH7=w226-h149-no?authuser=0)
+
+Previamente se realizan índices con el genoma de referencia.
+
+```
+module load segemehl/0.3.4
+
+# Secuencia completa
+segemehl.x -x chrM.hg38A.idx -d chrM.hg38A.fa
+
+# Extremos
+segemehl.x -x chrM.hg38.THjnct.idx -d chrM.hg38.THjnct.fa
+
+```
+
+Con la secuencia completa.
+
+```
+#$ -S /bin/bash
+#
+# Your job name
+#$ -N BC54.bam
+#
+# Use current working directory
+#$ -cwd
+#
+# Join stdout and stderr
+#$ -j y
+#
+# If modules are needed, source modules environment (Do not delete the next line):
+. /etc/profile.d/modules.sh
+#
+# Agregar módulos necesarios
+module load segemehl/0.3.4
+#
+#pe (Parallel environment)request a parallel environment (MPI, OpenMP). Set your number of requested slots here.
+#A continuación, número de hilos pedidos a máquina
+#$ -pe mpich 8
+#
+# Write your commands in the next line
+segemehl.x -b -S -t 8 -g RGmt -d chrM.hg38A.fa -i chrM.hg38A.idx -q /mnt/Timina/alfredvar/alfredvar/seqdata/SENASICA_7/BC50_R1_trimP.fastq -p /mnt/Timina/alfredvar/alfredvar/seqdata/SENASICA_7/BC50_R2_trimP.fastq > BC50A.bam
+
+
+```
+
+
+Con los extremos.
+
+```
+#$ -S /bin/bash
+#
+# Your job name
+#$ -N BC50j
+#
+# Use current working directory
+#$ -cwd
+#
+# Join stdout and stderr
+#$ -j y
+#
+# If modules are needed, source modules environment (Do not delete the next line):
+. /etc/profile.d/modules.sh
+#
+# Agregar módulos necesarios
+module load segemehl/0.3.4
+#
+#A continuación, número de hilos pedidos a máquina
+#$ -pe mpich 8
+#
+# Comandos
+segemehl.x -S -b -t 8 -g RGmt -d chrM.hg38.THjnct.fa -i chrM.hg38.THjnct.idx -q /mnt/Timina/alfredvar/alfredvar/seqdata/SENASICA_7/BC50_R1_trimP.fastq -p /mnt/Timina/alfredvar/alfredvar/seqdata/SENASICA_7/BC50_R2_trimP.fastq -o BC50j.bam
+
+
+```
+
+*-s* modo de lecturas divididas
+*-b* en formato bam
+*-t* número de hilos, 8 en este caso
+*-d* base de datos, indica que ahí están los datos (genoma de referencia)
+*-i* índice
+*-q* primer archivo, sec query 
+*-p* segundo archivo
+
+
+### **Samtools**
+
+Para el análisis y manejo de los datos. Lectura, edición, index, visualización de formatos SAM, BAM, CRAM.
+
+```
+
+#$ -S /bin/bash
+
+#
+
+# Your job name
+
+#$ -N samtools.B
+
+#
+# Use current working directory
+#$ -cwd
+#
+# Join stdout and stderr
+#$ -j y
+#
+#
+# If modules are needed, source modules environment (Do not delete the next line):
+. /etc/profile.d/modules.sh
+#
+# Agregar módulos necesarios
+module load samtools/1.3.1
+#
+#pe (Parallel environment)request a parallel environment (MPI, OpenMP). Set your number of requested slots here.
+#A continuación, número de hilos pedidos a máquina
+#$ -pe mpich 1
+#
+# Write your commands in the next line
+samtools sort BC50A.bam -o BC50A.bam.sort
+samtools sort BC50.j.bam -o BC50.j.bam.sort
+samtools sort BC51A.bam -o BC51A.bam.sort
+samtools sort BC51.j.bam -o BC51.j.bam.sort
+samtools sort BC52A.bam -o BC52A.bam.sort
+samtools sort BC52.j.bam -o BC52.j.bam.sort
+samtools sort BC54A.bam -o BC54A.bam.sort
+samtools sort BC54.j.bam -o BC54.j.bam.sort
+samtools sort BC55A.bam -o BC55A.bam.sort
+samtools sort BC55.j.bam -o BC55.j.bam.sort
+samtools sort BC56A.bam -o BC56A.bam.sort
+samtools sort BC56.j.bam -o BC56.j.bam.sort
+samtools sort BC57A.bam -o BC57A.bam.sort
+samtools sort BC57.j.bam -o BC57.j.bam.sort
+samtools sort BC58A.bam -o BC58A.bam.sort
+samtools sort BC58.j.bam -o BC58.j.bam.sort
+
+
+```
+
+### **Mutec2**
+
+Identifación de variantes
+
+Llamado de mutaciones cortas somáticas por medio del ensamblaje de haplotipos, incluyen alteraciones de un solo nucleótido (SNA), de inserción y deleción. Existen 3 tipos de modos:
+
+1. Modo tumor-normal, una muestra de tumor se empareja con una muestra normal.
+2. Modo solo tumor, solo los datos de una muestra se someten a análisis.
+3. Modo mitocondrial, en este caso el modo de interés.
+
+Con la secuencia completa.
+
+```
+#$ -S /bin/bash
+#
+# Your job name
+#$ -N BC50A.mt2
+#
+# Use current working directory
+#$ -cwd
+#
+# Join stdout and stderr
+#$ -j y
+#
+# If modules are needed, source modules environment (Do not delete the next line):
+. /etc/profile.d/modules.sh
+#
+# Agregar módulos necesarios
+module load gatk/4.1.6.0
+#
+#pe (Parallel environment)request a parallel environment (MPI, OpenMP). Set your
+number of requested slots here.
+#A continuación, número de hilos pedidos a máquina
+#$ -pe mpich 4
+#
+# Write your commands in the next line
+gatk Mutect2 \
+-R chrM.hg38A.fa \
+-I BC50A.bam.sort \
+-O BC50A.vcf.gz \
+-L chrM \
+--mitochondria-mode \
+--active-probability-threshold 0.000001 \
+--base-quality-score-threshold 6 \
+--callable-depth 5 \
+--downsampling-stride 1 \
+--f1r2-max-depth 1000000 \
+--force-active \
+--max-mnp-distance 0 \
+--max-population-af 1 \
+--max-reads-per-alignment-start 0 \
+--min-base-quality-score 30 \
+--dont-use-soft-clipped-bases \
+--phred-scaled-global-read-mismapping-rate 30
+
+
+```
+
+Con los extremos.
+
+```
+
+#$ -S /bin/bash
+#
+# Your job name
+#$ -N BC50j.mt2
+#
+# Use current working directory
+#$ -cwd
+#
+# Join stdout and stderr
+#$ -j y
+#
+# If modules are needed, source modules environment (Do not delete the next line):
+. /etc/profile.d/modules.sh
+#
+# Agregar módulos necesarios
+module load gatk/4.1.6.0
+#
+#pe (Parallel environment)request a parallel environment (MPI, OpenMP). Set your
+number of requested slots here.
+#A continuación, número de hilos pedidos a máquina
+#$ -pe mpich 4
+#
+# Write your commands in the next line
+gatk Mutect2 \
+-R chrM.hg38.THjnct.fa \
+-I BC50.j.bam.sort \
+-O BC50j.vcf.gz \
+-L chrM:1500-4500 \
+--mitochondria-mode \
+--active-probability-threshold 0.000001 \
+--base-quality-score-threshold 6 \
+--callable-depth 5 \
+--downsampling-stride 1 \
+--f1r2-max-depth 1000000 \
+--force-active \
+--max-mnp-distance 0 \
+--max-population-af 1 \
+--max-reads-per-alignment-start 0 \
+--min-base-quality-score 30 \
+--dont-use-soft-clipped-bases \
+--phred-scaled-global-read-mismapping-rate 30
+
+```
+
+*-R* genoma de referencia
+*-I* archivo de entrada
+*-O* archivo de salida
+*--active-probability-threshold* probabilidad mínima para que un locus se considere activo
+*--downsampling-stride* reducir la muestra de un conjunto de lecturas que comienzan en un rango de una o más bases
+*--max-population-af* frecuencia alélica máxima de la población en el modo de solo tumor
+*--phred-scaled-global-read-mismapping-rate* la tasa global de desajuste asumida para las lecturas
+
+
+
+### **Filtrado de datos**
+
+Con la secuencia completa.
+
+```
+
+#!/bin/bash
+# filtra los archivos de salida de mutec2 de la longitud completo, selecciona los de un nucleótido, elimina el sesgo de la hebra, elimina 1 kb de la cola y cabeza, calcula la frecuencia alélica 
+
+for i in $(ls -1 BC5?A.vcf.gz | awk -F '.' '{print $1}')
+
+do
+
+zcat $i.vcf.gz |\
+grep ^chrM |\
+awk '{print $2"\t"$4"\t"$5"\t"$10}' |\
+awk -F ':' '{print $1"\t"$2"\t"$4"\t"$7}' |\
+grep '  0/1  '|\
+awk -F ',' '{print $1"\t"$2"\t"$3"\t"$4"\t"$5}'|\
+awk '{if ($5 < $6) print
+$1"\t"$3"\t"$2"\t"$4"\t"$6"\t"$5"\t"$7"\t"$10"\t"$11"\t"$8"\t"$9; else print
+$0}'|\
+awk '($1>1000) && ($1 < 15570) && ($11 ? $10/$11<=1.5 : 0) && ($10 ? $11/$10<=1.5 :
+0) && ($8/$9<=1.5) && ($9/$8<=1.5) && $10>=5 && $11 >=5 {print $0"\t"$6/$7}'>
+$i.fltrd.1
+
+done
+
+```
+
+
+Con los extremos.
+
+```
+#!/bin/bash
+# filtra la salida de los archivos de mutec2 del mapeo de la cabeza y cola, selecciona los de un solo nuclétido, invierte alelos si es necesario, elimina el sesgo (0.66), porcentaje gt, elimina 1 kb de cola y cabeza y calcula la frecuencia alélica
+
+for i in $(ls -1 BC5?j.vcf.gz | awk -F '.' '{print $1}')
+
+do
+
+zcat $i.vcf.gz |\
+grep ^chrM |\
+awk '{print $2"\t"$4"\t"$5"\t"$10}' |\
+awk -F ':' '{print $1"\t"$2"\t"$4"\t"$7}' |\
+grep '  0/1  '|\
+awk -F ',' '{print $1"\t"$2"\t"$3"\t"$4"\t"$5}'|\
+awk '{if ($5 < $6) print
+$1"\t"$3"\t"$2"\t"$4"\t"$6"\t"$5"\t"$7"\t"$10"\t"$11"\t"$8"\t"$9; else print
+$0}'|\
+awk '($11 ? $10/$11<=1.5 : 0) && ($10 ? $11/$10<=1.5 : 0) && ($8/$9<=1.5) &&
+($9/$8<=1.5) && $10>=5 && 11>=5 {print $0}' |\
+awk '{if ($1>2000 && 1>3001) print $1+13569"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9"\t"$10"\t"$11"\t"$6/$7;
+else if ($1>3000 && $1<4001) print $1-
+3000"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9"\t"$10"\t"$11"\t"$6/$7} '>
+$i.fltrd.1
+
+done
+
+
+```
+
+Juntar las variantes de ambas secuencias.
+
+```
+grep " " BC5*fltrd.1 | awk '$12>0.0025 {print $0}';| sed 's/.fltrd.1:/   /g' | sort -k2n,2 &gt; z_Finalists.human
+
+```
+
+```{bash}
+
+cd /mnt/d/micro/R/Proyecto/
+
+less z_Finalists.human
+
+```
+
+Extraer las posiciones de los 10 nucleótidos antes y después de las variantes.
+
+```
+awk '{print "samtools faidx chrM.hg38.fa chrM:"$2-10"-"$2+10" > x"$1"."$2}' z_Finalists.human > z_Finalists.human.extract.list
+
+```
+
+Volverlo ejecutable para correr samtools, generar faidx y extraer los 10 nucleótidos antes y después de la variante.
+
+```
+
+#!/bin/bash
+#this extracts 10nt flanking VAR on each side
+
+module load samtools/1.9
+
+samtools faidx chrM.hg38.fa chrM:136-156 > xBC54j.146
+samtools faidx chrM.hg38.fa chrM:136-156 > xBC55j.146
+samtools faidx chrM.hg38.fa chrM:143-163 > xBC54j.153
+samtools faidx chrM.hg38.fa chrM:225-245 > xBC54j.235
+samtools faidx chrM.hg38.fa chrM:225-245 > xBC55j.235
+samtools faidx chrM.hg38.fa chrM:237-257 > xBC54j.247
+samtools faidx chrM.hg38.fa chrM:653-673 > xBC54j.663
+samtools faidx chrM.hg38.fa chrM:1726-1746 > xBC54A.1736
+samtools faidx chrM.hg38.fa chrM:3186-3206 > xBC58A.3196
+samtools faidx chrM.hg38.fa chrM:3659-3679 > xBC50A.3669
+samtools faidx chrM.hg38.fa chrM:3839-3859 > xBC58A.3849
+samtools faidx chrM.hg38.fa chrM:4238-4258 > xBC54A.4248
+samtools faidx chrM.hg38.fa chrM:4238-4258 > xBC55A.4248
+samtools faidx chrM.hg38.fa chrM:4759-4779 > xBC55A.4769
+samtools faidx chrM.hg38.fa chrM:4814-4834 > xBC54A.4824
+samtools faidx chrM.hg38.fa chrM:6494-6514 > xBC56A.6504
+samtools faidx chrM.hg38.fa chrM:6811-6831 > xBC58A.6821
+samtools faidx chrM.hg38.fa chrM:6993-7013 > xBC54A.7003
+samtools faidx chrM.hg38.fa chrM:7128-7148 > xBC57A.7138
+samtools faidx chrM.hg38.fa chrM:7186-7206 > xBC54A.7196
+samtools faidx chrM.hg38.fa chrM:7714-7734 > xBC54A.7724
+samtools faidx chrM.hg38.fa chrM:7714-7734 > xBC55A.7724
+samtools faidx chrM.hg38.fa chrM:7849-7869 > xBC54A.7859
+samtools faidx chrM.hg38.fa chrM:8017-8037 > xBC54A.8027
+samtools faidx chrM.hg38.fa chrM:8024-8044 > xBC50A.8034
+samtools faidx chrM.hg38.fa chrM:8691-8711 > xBC54A.8701
+samtools faidx chrM.hg38.fa chrM:8784-8804 > xBC54A.8794
+samtools faidx chrM.hg38.fa chrM:9835-9855 > xBC55A.9845
+samtools faidx chrM.hg38.fa chrM:12375-12395 > xBC52A.12385
+samtools faidx chrM.hg38.fa chrM:12407-12427 > xBC52A.12417
+samtools faidx chrM.hg38.fa chrM:12407-12427 > xBC57A.12417
+samtools faidx chrM.hg38.fa chrM:12707-12727 > xBC54A.12717
+samtools faidx chrM.hg38.fa chrM:13253-13273 > xBC54A.13263
+samtools faidx chrM.hg38.fa chrM:14460-14480 > xBC54A.14470
+samtools faidx chrM.hg38.fa chrM:15033-15053 > xBC54A.15043
+samtools faidx chrM.hg38.fa chrM:15291-15311 > xBC54A.15301
+samtools faidx chrM.hg38.fa chrM:15477-15497 > xBC54A.15487
+samtools faidx chrM.hg38.fa chrM:16283-16303 > xBC54j.16293
+samtools faidx chrM.hg38.fa chrM:16509-16529 > xBC54j.16519
+
+
+```
+
+Generar un archivo con los fragmentos ordenados por coordenadas y nombre de la muestra.
+
+```
+grep [ATGC] xBC5* | awk -F "[.:]" '{print $1"\t"$2"\t"$3}' | sort -k2n,2 > z_Finalists.human.flanks
+
+```
+
+```{bash}
+
+cd /mnt/d/micro/R/Proyecto/
+
+less z_Finalists.human.flanks
+
+```
+
+
+Separar el nucleótido de la variante.
+
+
+``` 
+
+awk '{print $1"\t"$2"\t"substr($3,1,10)"\t"substr($3,11,1)"\t"substr($3,12,10)}' z_Finalists.human.flanks > Finalists.human.flanks_split.split
+
+```
+```{bash}
+
+cd /mnt/d/micro/R/genomic/Proyecto/
+
+cat Finalists.human.flanks_split.split
+
+```
+
+
+# **Red**
+
+Se generó una red en Cytoscape, basada en las variantes que se repetían en la misma posición y así visualizar la muestra que más tenía variantes, la cual fue BC54.
+
+![](https://lh3.googleusercontent.com/pw/AM-JKLVa-iHWXNiSBwM6l28_xdcU1l25GZLOU20YxDihV-PXhvYVR5BV_-tY8pdf3j_fw8U9O0DhODJW3MGJy4InraXROjomATSP9Z9nqOXYw6lt9-GQzTRAYimaob3UymSoH8_Fe3tTGNKHPj4wVBjNokFz=w321-h203-no?authuser=0)
+
+Con esto se puede realizar la busqueda de asociación de las variantes a una enfermedad.
+
+# **Referencias bibiliográficas**
+
+Bolger, A M, M Lohse, and B Usadel. 2014. “Trimmomatic: A Flexible Trimmer for Illumina Sequence Data.” Bioinformatics 30 (15): 2114–20. doi:btu170[pii]10.1093/bioinformatics/btu170.
+
+Carelli, Valerio, Alessandra Maresca, Leonardo Caporali, Selena Trifunov, Claudia Zanna, and Michela Rugolo. 2015. “Mitochondria: Biogenesis and Mitophagy Balance in Segregation and Clonal Expansion of Mitochondrial DNA Mutations.” International Journal of Biochemistry and Cell Biology 63. Elsevier Ltd: 21–24. doi:10.1016/j.biocel.2015.01.023.
+
+Damas, Joana, David C. Samuels, Joo Carneiro, Antonio Amorim, and Filipe Pereira. 2014. “Mitochondrial DNA Rearrangements in Health and Disease-A Comprehensive Study.” Human Mutation 35 (1): 1–14. doi:10.1002/humu.22452.
+
+Li, H, B Handsaker, A Wysoker, T Fennell, J Ruan, N Homer, G Marth, G Abecasis, and R Durbin. 2009. “The Sequence Alignment/Map Format and SAMtools.” Bioinformatics 25 (16): 2078–79. doi:btp352 [pii]10.1093/bioinformatics/btp352.
+
